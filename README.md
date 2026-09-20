@@ -6,7 +6,7 @@ Cada loja tem uma pasta com seu cardápio digital + imagens dos produtos.
 
 ```
 cardapios/
-  pizzaria-brasa/
+  pizzaria-fornalha/
     index.html          ← página do cardápio
     img/
       calabresa.jpg     ← fotos dos produtos (quadradas, ~600x600px)
@@ -21,7 +21,7 @@ cardapios/
 ## Como usar
 
 1. Crie a pasta da loja: `mkdir -p nome-da-loja/img`
-2. Copie o `index.html` da pizzaria-brasa como modelo
+2. Copie o `index.html` da pizzaria-fornalha como modelo
 3. Edite o objeto `CONFIG` no final do HTML com os produtos da loja
 4. Coloque as fotos em `img/` (JPG, quadradas, ~600x600px, máx 200KB)
 5. Faça git push — GitHub Pages publica automaticamente
