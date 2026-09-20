@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela de Valores - StarQueen</title>
+<style>
+  :root {
+    --cor-primaria: #9c2a6b;
+    --cor-dourado: #d4af37;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+    --cor-preco: #d4af37;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #4a0f33);
+    text-align: center;
+    padding: 32px 16px 24px;
+  }
+  .header h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .header h1 span { color: var(--cor-dourado); }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+  .header .info { font-size: 0.85rem; opacity: 0.8; margin-top: 8px; }
+  .categorias {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo);
+    z-index: 10;
+  }
+  .categorias button {
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .categorias button.ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #fff;
+  }
+  .secao-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 24px 16px 8px;
+    color: var(--cor-dourado);
+  }
+  .servicos { padding: 0 16px 24px; }
+  .linha {
+    background: var(--cor-card);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .linha .info { min-width: 0; }
+  .linha .nome {
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
+  .linha .descricao {
+    font-size: 0.78rem;
+    color: var(--cor-subtexto);
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  .linha .preco {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--cor-preco);
+    white-space: nowrap;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+  }
+  .whatsapp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .footer {
+    text-align: center;
+    padding: 24px 16px 80px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Star<span>Queen</span></h1>
+  <p>Salao de Beleza e Estetica</p>
+  <div class="info">Ter a sab - 9h as 19h | Agende pelo WhatsApp</div>
+</div>
+
+<nav class="categorias" id="categorias"></nav>
+
+<main id="tabela"></main>
+
+<div class="footer">
+  StarQueen - Salao de Beleza e Estetica<br>
+  Valores podem sofrer alteracao conforme avaliacao. Consulte pelo WhatsApp.
+</div>
+
+<a class="whatsapp-btn" id="btnWhatsapp" href="#">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.638-1.522A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.115 0-4.088-.656-5.712-1.781l-.41-.258-2.75.903.882-2.684-.278-.438A9.72 9.72 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+  Agendar horario
+</a>
+
+<script>
+var CONFIG = {
+  nome: 'StarQueen',
+  whatsapp: '5542992485140',
+  mensagem: 'Oi! Vi a tabela de valores e quero agendar um horario 👑',
+  categorias: [
+    {
+      nome: 'Cabelos',
+      emoji: '💇‍♀️',
+      itens: [
+        { nome: 'Corte Feminino', descricao: '', faixa: 'R$ 200 a R$ 390' },
+        { nome: 'Corte Masculino', descricao: '', faixa: 'R$ 100 a R$ 390' },
+        { nome: 'Escova', descricao: '', faixa: 'R$ 100 a R$ 150' },
+        { nome: 'Hidratacao', descricao: '', faixa: 'R$ 150 a R$ 300' },
+        { nome: 'Luzes / Mechas', descricao: '', faixa: 'R$ 250 a R$ 600' },
+        { nome: 'Mechas', descricao: '', faixa: 'R$ 350 a R$ 800' },
+        { nome: 'Penteado', descricao: '', faixa: 'R$ 180 a R$ 380' },
+        { nome: 'Penteado Noiva', descricao: '', faixa: 'R$ 350 a R$ 500' },
+        { nome: 'Lavado', descricao: '', faixa: 'R$ 30' },
+        { nome: 'Secado', descricao: '', faixa: 'R$ 50 a R$ 70' },
+        { nome: 'Tintura', descricao: '', faixa: 'R$ 240 a R$ 300' },
+        { nome: 'Amaciamento / Relaxamento', descricao: '', faixa: 'R$ 200 a R$ 450' },
+        { nome: 'Entrelacamento', descricao: '', faixa: 'Sob consulta' },
+        { nome: 'Ajuste de Entrelacamento', descricao: '', faixa: 'R$ 130 a R$ 330' },
+        { nome: 'Suporte / Permanente', descricao: '', faixa: 'R$ 150 a R$ 250' },
+        { nome: 'Aplicacao Quimica', descricao: '', faixa: 'R$ 120 a R$ 160' },
+        { nome: 'Escova Progressiva Temporaria', descricao: '', faixa: 'R$ 250 a R$ 450' },
+        { nome: 'Alisamento Fotonico', descricao: 'Sob avaliacao', faixa: 'A partir de R$ 500, ate R$ 1.400' }
+      ]
+    },
+    {
+      nome: 'Dia da Noiva',
+      emoji: '👰',
+      itens: [
+        { nome: 'Pacote Completo', descricao: 'Com possibilidade de alteracoes — massagem relaxante, hidromassagem, banho aromatico, manicure, pedicure, lanche da tarde, maquiagem, penteado e retoques finais', faixa: 'R$ 2.500' }
+      ]
+    },
+    {
+      nome: 'Manicure e Pedicure',
+      emoji: '💅',
+      itens: [
+        { nome: 'Mao Basica', descricao: '', faixa: 'R$ 55' },
+        { nome: 'Mao Francesinha', descricao: '', faixa: 'R$ 65' },
+        { nome: 'Podologia', descricao: '', faixa: 'R$ 210' },
+        { nome: 'Pe Basico', descricao: '', faixa: 'R$ 60 a R$ 65' },
+        { nome: 'Pe Francesinha', descricao: '', faixa: 'R$ 70 a R$ 75' },
+        { nome: 'Banho de Gel em Unhas', descricao: '', faixa: 'R$ 150' },
+        { nome: 'Unhas de Fibra', descricao: '', faixa: 'R$ 250' },
+        { nome: 'Colour Gloss', descricao: '', faixa: 'R$ 150 a R$ 160' },
+        { nome: 'Manutencao Unhas de Fibra', descricao: '', faixa: 'R$ 190' },
+        { nome: 'Hidratacao com Peeling', descricao: '', faixa: 'R$ 25' },
+        { nome: 'Unha de Fibra de Vidro Avulsa', descricao: '', faixa: 'R$ 30' },
+        { nome: 'Hidratacao de Pes e Maos', descricao: '', faixa: 'A partir de R$ 65' },
+        { nome: 'Colocacao de Unhas Posticas', descricao: '', faixa: 'A partir de R$ 20' },
+        { nome: 'Esmaltacao Semi Permanente', descricao: '', faixa: 'R$ 115' }
+      ]
+    },
+    {
+      nome: 'Maquiagem',
+      emoji: '💄',
+      itens: [
+        { nome: 'Maquiagem', descricao: '', faixa: 'R$ 200 a R$ 260' },
+        { nome: 'Maquiagem Noiva', descricao: '', faixa: 'R$ 350 a R$ 400' },
+        { nome: 'Maquiagem de Efeito Especial', descricao: '', faixa: 'A partir de R$ 150' },
+        { nome: 'Permanente de Cilios', descricao: '', faixa: 'R$ 180 a R$ 200' },
+        { nome: 'Colocacao de Cilios', descricao: '', faixa: 'R$ 50 a R$ 80' },
+        { nome: 'Coloracao de Cilios', descricao: '', faixa: 'R$ 40 a R$ 60' },
+        { nome: 'Extensao de Cilios', descricao: 'Fio-a-fio ou tufos', faixa: 'R$ 150 a R$ 180' },
+        { nome: 'Tingimento de Cilios', descricao: '', faixa: 'A partir de R$ 60' }
+      ]
+    },
+    {
+      nome: 'Depilacao',
+      emoji: '🪒',
+      itens: [
+        { nome: 'Axila', descricao: '', faixa: 'R$ 40' },
+        { nome: 'Buco', descricao: '', faixa: 'R$ 30 a R$ 40' },
+        { nome: 'Coloracao', descricao: '', faixa: 'A partir de R$ 50' },
+        { nome: 'Meia Perna', descricao: '', faixa: 'R$ 70 a R$ 90' },
+        { nome: 'Rosto Completo com Fio', descricao: '', faixa: 'R$ 85' },
+        { nome: 'Buco com Fio', descricao: '', faixa: 'R$ 45' },
+        { nome: 'Virilha', descricao: '', faixa: 'R$ 70 a R$ 110' }
+      ]
+    },
+    {
+      nome: 'Estetica Facial e Corporal',
+      emoji: '✨',
+      itens: [
+        { nome: 'Sobrancelha', descricao: '', faixa: 'R$ 50 a R$ 60' },
+        { nome: 'Design de Sobrancelha', descricao: '', faixa: 'R$ 60 a R$ 75' },
+        { nome: 'Blindagem Nutritiva Facial', descricao: 'Pre e pos operatorio', faixa: 'R$ 230' },
+        { nome: 'Drenagem Linfatica Facial', descricao: 'Pre e pos operatorio', faixa: 'R$ 100' },
+        { nome: 'Drenagem Linfatica', descricao: '', faixa: 'R$ 230' },
+        { nome: 'Esfoliacoes Corporais', descricao: '', faixa: 'A partir de R$ 100' },
+        { nome: 'Facial Restauradora C+', descricao: 'Pre e pos operatorio', faixa: 'R$ 240' },
+        { nome: 'Limpeza de Pele', descricao: '', faixa: 'R$ 350' },
+        { nome: 'Hidratacao Facial', descricao: '', faixa: 'R$ 130 a R$ 150' },
+        { nome: 'Peeling Facial', descricao: '', faixa: 'Sob consulta' },
+        { nome: 'Massagem com Pedras Quentes', descricao: '', faixa: 'R$ 140' },
+        { nome: 'Massagem com Tecnica Renata Franca', descricao: '', faixa: 'Sob consulta' },
+        { nome: 'Massagem Masculina', descricao: '', faixa: 'R$ 330' },
+        { nome: 'Massagem Modeladora', descricao: '', faixa: 'R$ 230' },
+        { nome: 'Massagem Relaxante', descricao: '', faixa: 'R$ 230' },
+        { nome: 'Massagem para Noiva', descricao: '', faixa: 'R$ 300' },
+        { nome: 'Massagem Terapeutica', descricao: '', faixa: 'R$ 120' },
+        { nome: 'Microblading', descricao: '', faixa: 'R$ 650 a R$ 1.600' },
+        { nome: 'Tratamento de Acne', descricao: '', faixa: 'R$ 230' }
+      ]
+    }
+  ]
+};
+
+function renderTabela(filtro) {
+  var main = document.getElementById('tabela');
+  main.innerHTML = '';
+  var cats = filtro ? CONFIG.categorias.filter(function(c) { return c.nome === filtro; }) : CONFIG.categorias;
+  cats.forEach(function(cat) {
+    var titulo = document.createElement('h2');
+    titulo.className = 'secao-titulo';
+    titulo.textContent = cat.emoji + ' ' + cat.nome;
+    main.appendChild(titulo);
+    var container = document.createElement('div');
+    container.className = 'servicos';
+    cat.itens.forEach(function(item) {
+      var linha = document.createElement('div');
+      linha.className = 'linha';
+      var descHtml = item.descricao ? '<div class="descricao">' + item.descricao + '</div>' : '';
+      linha.innerHTML = '<div class="info"><div class="nome">' + item.nome + '</div>' + descHtml + '</div><div class="preco">' + item.faixa + '</div>';
+      container.appendChild(linha);
+    });
+    main.appendChild(container);
+  });
+}
+
+function renderCategorias() {
+  var nav = document.getElementById('categorias');
+  var btnTodas = document.createElement('button');
+  btnTodas.textContent = 'Todas';
+  btnTodas.className = 'ativo';
+  btnTodas.onclick = function() {
+    document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+    btnTodas.classList.add('ativo');
+    renderTabela(null);
+  };
+  nav.appendChild(btnTodas);
+  CONFIG.categorias.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.textContent = cat.emoji + ' ' + cat.nome;
+    btn.onclick = function() {
+      document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderTabela(cat.nome);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('btnWhatsapp').href =
+  'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensagem);
+
+renderCategorias();
+renderTabela(null);
+</script>
+</body>
+</html>
