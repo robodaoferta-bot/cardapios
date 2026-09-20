@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardapios Demo - MandaProPai</title>
+<style>
+  :root {
+    --cor-primaria: #6366f1;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #312e81);
+    text-align: center;
+    padding: 40px 16px 28px;
+  }
+  .header h1 { font-size: 1.9rem; font-weight: 700; }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 6px; }
+  .lista {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+  .card {
+    background: var(--cor-card);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--cor-texto);
+    transition: transform 0.15s;
+  }
+  .card:active { transform: scale(0.98); }
+  .card .icone { font-size: 1.8rem; flex-shrink: 0; }
+  .card .info { flex: 1; min-width: 0; }
+  .card .nome { font-weight: 700; font-size: 1.05rem; }
+  .card .tipo { font-size: 0.82rem; color: var(--cor-subtexto); margin-top: 2px; }
+  .card .seta { font-size: 1.3rem; color: var(--cor-primaria); flex-shrink: 0; }
+  .footer {
+    text-align: center;
+    padding: 8px 16px 40px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Cardapios Demo</h1>
+  <p>MandaProPai - exemplos de lojas para demonstracao</p>
+</div>
+
+<main class="lista" id="lista"></main>
+
+<div class="footer">
+  Cada link abre o cardapio digital completo da loja demo.
+</div>
+
+<script>
+var LOJAS = [
+  { nome: 'Pizzaria Fornalha', tipo: 'Pizzaria', icone: '🍕', pasta: 'pizzaria-fornalha' },
+  { nome: 'Hamburguer da Vo', tipo: 'Hamburgueria', icone: '🍔', pasta: 'hamburguer-da-vo' },
+  { nome: 'Bolo do Bem', tipo: 'Confeitaria', icone: '🎂', pasta: 'bolo-do-bem' },
+  { nome: 'StarQueen', tipo: 'Salao de Beleza e Estetica', icone: '👑', pasta: 'starqueen' },
+  { nome: 'Barbaraiz', tipo: 'Barbearia Classica', icone: '💈', pasta: 'barbaraiz' }
+];
+
+var lista = document.getElementById('lista');
+LOJAS.forEach(function(loja) {
+  var a = document.createElement('a');
+  a.className = 'card';
+  a.href = loja.pasta + '/';
+  a.innerHTML =
+    '<div class="icone">' + loja.icone + '</div>' +
+    '<div class="info"><div class="nome">' + loja.nome + '</div><div class="tipo">' + loja.tipo + '</div></div>' +
+    '<div class="seta">›</div>';
+  lista.appendChild(a);
+});
+</script>
+</body>
+</html>
