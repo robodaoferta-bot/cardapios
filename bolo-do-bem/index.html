@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardapio - Bolo do Bem</title>
+<style>
+  :root {
+    --cor-primaria: #d81b60;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+    --cor-preco: #ffca28;
+    --cor-promo: #4caf50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #880e4f);
+    text-align: center;
+    padding: 32px 16px 24px;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+  .header .info { font-size: 0.85rem; opacity: 0.8; margin-top: 8px; }
+  .categorias {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo);
+    z-index: 10;
+  }
+  .categorias button {
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .categorias button.ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #fff;
+  }
+  .secao-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 24px 16px 8px;
+    color: var(--cor-preco);
+  }
+  .produtos { padding: 0 16px 24px; }
+  .card {
+    background: var(--cor-card);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    min-height: 110px;
+  }
+  .card img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .card .info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .card .nome {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .card .descricao {
+    font-size: 0.82rem;
+    color: var(--cor-subtexto);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .preco {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-preco);
+  }
+  .card .preco .original {
+    text-decoration: line-through;
+    color: var(--cor-subtexto);
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
+  .card .preco .promo { color: var(--cor-promo); }
+  .sem-foto {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+  }
+  .whatsapp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .footer {
+    text-align: center;
+    padding: 24px 16px 80px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Bolo do Bem</h1>
+  <p>Bolos caseiros feitos com carinho</p>
+  <div class="info">Aberto de ter a dom - 9h as 19h | Pedido min. R$ 20,00</div>
+</div>
+
+<nav class="categorias" id="categorias"></nav>
+
+<main id="cardapio"></main>
+
+<div class="footer">
+  Bolo do Bem - Delivery e Retirada<br>
+  Precos podem sofrer alteracao. Consulte pelo WhatsApp.
+</div>
+
+<a class="whatsapp-btn" id="btnWhatsapp" href="#">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.638-1.522A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.115 0-4.088-.656-5.712-1.781l-.41-.258-2.75.903.882-2.684-.278-.438A9.72 9.72 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+  Fazer pedido
+</a>
+
+<script>
+var IMG = 'https://www.casadebolos.com.br/wp-content/uploads/';
+
+var CONFIG = {
+  nome: 'Bolo do Bem',
+  whatsapp: '5542992485140',
+  mensagem: 'Oi! Vi o cardapio e quero fazer um pedido 🎂',
+  categorias: [
+    {
+      nome: 'Bolos',
+      emoji: '🎂',
+      itens: [
+        {
+          nome: 'Bolo de Chocolate',
+          descricao: 'Bolo caseiro inteiro sabor chocolate, serve ate 15 pessoas',
+          preco: 62.00,
+          imagem: IMG + '2017/10/Chocolate-1-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Cenoura',
+          descricao: 'Bolo caseiro de cenoura com cobertura de chocolate',
+          preco: 58.00,
+          imagem: IMG + '2017/10/cenoura-3-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Fuba',
+          descricao: 'Bolo de fuba tradicional, textura macia',
+          preco: 55.00,
+          imagem: IMG + '2017/10/fubá-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Milho',
+          descricao: 'Bolo de milho verde caseiro',
+          preco: 55.00,
+          imagem: IMG + '2017/10/milho-1-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Iogurte',
+          descricao: 'Bolo fofinho de iogurte natural',
+          preco: 58.00,
+          imagem: IMG + '2017/10/Iogurte-1-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Formigueiro',
+          descricao: 'Bolo de baunilha com gotas de chocolate',
+          preco: 60.00,
+          imagem: IMG + '2017/10/formigueiro-1-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Coco',
+          descricao: 'Bolo caseiro de coco ralado',
+          preco: 58.00,
+          imagem: IMG + '2017/10/coco-2-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Laranja',
+          descricao: 'Bolo de laranja fofinho com casca',
+          preco: 55.00,
+          imagem: IMG + '2017/10/Laranja-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Limao',
+          descricao: 'Bolo de limao siciliano com calda',
+          preco: 58.00,
+          imagem: IMG + '2017/10/Limão-1-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Maracuja',
+          descricao: 'Bolo de maracuja com calda da fruta',
+          preco: 58.00,
+          imagem: IMG + '2017/10/Maracuja-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Prestigio',
+          descricao: 'Bolo de chocolate com cobertura de coco',
+          preco: 65.00,
+          imagem: IMG + '2017/10/Prestigio-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Fofinho de Chocolate',
+          descricao: 'Bolo bem fofinho, receita da vovo',
+          preco: 60.00,
+          imagem: IMG + '2017/10/Fofinho-de-chocolate-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Bolos Recheados',
+      emoji: '🍰',
+      itens: [
+        {
+          nome: 'Bolo Pao de Mel',
+          descricao: 'Bolo recheado sabor pao de mel com doce de leite',
+          preco: 85.00,
+          imagem: IMG + '2025/09/RECHEADOS-Pão-de-mel-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Leitinho com Morango - Medio',
+          descricao: 'Camadas de bolo, creme de leitinho e morango, tamanho medio (ate 12 fatias)',
+          preco: 85.00,
+          imagem: IMG + '2025/04/RECHEADOS-Leitinho-morango-médio-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Leitinho com Morango - Grande',
+          descricao: 'Camadas de bolo, creme de leitinho e morango, tamanho grande (ate 20 fatias)',
+          preco: 115.00,
+          imagem: IMG + '2025/04/RECHEADOS-Leitinho-morango-grande-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Chocolate - Medio',
+          descricao: 'Camadas de chocolate com recheio cremoso, tamanho medio',
+          preco: 80.00,
+          imagem: IMG + '2024/02/RECHEADOS-Chocolate-médio-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Chocolate - Grande',
+          descricao: 'Camadas de chocolate com recheio cremoso, tamanho grande',
+          preco: 110.00,
+          imagem: IMG + '2017/10/RECHEADOS-Chocolate-grande-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Churros - Medio',
+          descricao: 'Recheio de doce de leite com canela, sabor churros',
+          preco: 85.00,
+          imagem: IMG + '2017/10/RECHEADOS-Churros-medio-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Recheado de Churros - Grande',
+          descricao: 'Recheio de doce de leite com canela, sabor churros, tamanho grande',
+          preco: 118.00,
+          imagem: IMG + '2020/11/RECHEADOS-Churros-grande-800x600.jpg'
+        },
+        {
+          nome: 'Bolo da Vo Sonia de Morango - Medio',
+          descricao: 'Receita tradicional com morango e chantilly',
+          preco: 88.00,
+          imagem: IMG + '2017/10/RECHEADOS-Vó-sonia-de-Morango-medio-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Ganache de Chocolate com Morango',
+          descricao: 'Ganache de chocolate com recheio de morango',
+          preco: 92.00,
+          imagem: IMG + '2021/12/RECHEADOS-Ganache-Morango-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Bem-Casado',
+          descricao: 'Recheio de doce de leite ao estilo bem-casado',
+          preco: 85.00,
+          imagem: IMG + '2017/10/RECHEADOS-Bem-casado-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Mini e Baby',
+      emoji: '🧁',
+      itens: [
+        {
+          nome: 'Bolo Amizade Baby',
+          descricao: 'Mini bolo individual sabor amizade (baunilha e chocolate)',
+          preco: 18.00,
+          imagem: IMG + '2026/08/BOLOS-BABY-Amizade-800x600.jpg'
+        },
+        {
+          nome: 'Mini Bolo de Frutas Vermelhas',
+          descricao: 'Mini bolo com recheio de frutas vermelhas',
+          preco: 20.00,
+          imagem: IMG + '2026/05/MINI-BOLOS-FrutasVermelhas-800x600.jpg'
+        },
+        {
+          nome: 'Mini Bolo de Fuba',
+          descricao: 'Mini bolo individual sabor fuba',
+          preco: 16.00,
+          imagem: IMG + '2026/08/MINI-BOLOS-Fuba-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Cenoura Baby',
+          descricao: 'Mini bolo individual de cenoura com chocolate',
+          preco: 18.00,
+          imagem: IMG + '2017/10/BOLOS-BABY-Cenoura-3-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Chocolate Baby',
+          descricao: 'Mini bolo individual de chocolate',
+          preco: 18.00,
+          imagem: IMG + '2017/10/BOLOS-BABY-Chocolate-4-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Laranja Baby',
+          descricao: 'Mini bolo individual de laranja',
+          preco: 17.00,
+          imagem: IMG + '2017/10/BOLOS-BABY-Laranja-3-800x600.jpg'
+        },
+        {
+          nome: 'Bolo de Limao Baby',
+          descricao: 'Mini bolo individual de limao',
+          preco: 17.00,
+          imagem: IMG + '2017/10/BOLOS-BABY-Limão-4-800x600.jpg'
+        },
+        {
+          nome: 'Mini Bolo de Iogurte',
+          descricao: 'Mini bolo individual de iogurte',
+          preco: 17.00,
+          imagem: IMG + '2019/08/Mini-Iogurte-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Bolo Caseiro no Pote',
+      emoji: '🍯',
+      itens: [
+        {
+          nome: 'Pote de Frutas Vermelhas',
+          descricao: 'Bolo caseiro no pote com frutas vermelhas, individual',
+          preco: 14.00,
+          imagem: IMG + '2026/05/BOLO-CASEIRO-NO-POTE-FrutasVermelhas-800x600.jpg'
+        },
+        {
+          nome: 'Pote de Leitinho com Morango',
+          descricao: 'Bolo caseiro no pote de leitinho com morango, individual',
+          preco: 14.00,
+          imagem: IMG + '2025/04/Leitinho-com-Morango-800x600.jpg'
+        },
+        {
+          nome: 'Pote de Chocolate com Leitinho',
+          descricao: 'Bolo caseiro no pote de chocolate com leitinho, individual',
+          preco: 14.00,
+          imagem: IMG + '2022/11/Chocolate-com-Leitinho-800x600.jpg'
+        },
+        {
+          nome: 'Pote de Brigadeiro',
+          descricao: 'Bolo caseiro no pote sabor brigadeiro, individual',
+          preco: 14.00,
+          imagem: IMG + '2017/10/Brigadeiro-800x600.jpg'
+        },
+        {
+          nome: 'Pote de Churros',
+          descricao: 'Bolo caseiro no pote sabor churros, individual',
+          preco: 14.00,
+          imagem: IMG + '2019/07/Churros-800x600.jpg'
+        },
+        {
+          nome: 'Pote de Prestigio',
+          descricao: 'Bolo caseiro no pote sabor prestigio, individual',
+          preco: 14.00,
+          imagem: IMG + '2017/10/Prestígio-1-800x600.jpg'
+        },
+        {
+          nome: 'Pote Familia de Brigadeiro',
+          descricao: 'Bolo caseiro no pote sabor brigadeiro, tamanho familia',
+          preco: 42.00,
+          imagem: IMG + '2018/11/BOLO-CASEIRO-NO-POTE-FAMILIA-Brigadeiro-1-800x600.jpg'
+        },
+        {
+          nome: 'Pote Familia de Leitinho',
+          descricao: 'Bolo caseiro no pote sabor leitinho, tamanho familia',
+          preco: 42.00,
+          imagem: IMG + '2018/11/BOLO-CASEIRO-NO-POTE-FAMILIA-Leitinho-1-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Bites',
+      emoji: '🍬',
+      itens: [
+        {
+          nome: 'Bites de Cenoura',
+          descricao: 'Caixa com 6 bites de cenoura com chocolate',
+          preco: 24.00,
+          imagem: IMG + '2026/06/BITES-SITE-Cenoura-800x600.jpg'
+        },
+        {
+          nome: 'Bites de Fuba',
+          descricao: 'Caixa com 6 bites de fuba',
+          preco: 22.00,
+          imagem: IMG + '2026/06/BITES-SITE-Fubá-800x600.jpg'
+        },
+        {
+          nome: 'Bites de Brownie',
+          descricao: 'Caixa com 6 bites de brownie',
+          preco: 26.00,
+          imagem: IMG + '2026/06/BITES-SITE-Brownie-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Gelados',
+      emoji: '🍮',
+      itens: [
+        {
+          nome: 'Manjar',
+          descricao: 'Manjar branco caseiro com calda de ameixa',
+          preco: 18.00,
+          imagem: IMG + '2023/12/Manjar-800x600.jpg'
+        },
+        {
+          nome: 'Pudim',
+          descricao: 'Pudim de leite caseiro',
+          preco: 18.00,
+          imagem: IMG + '2019/09/Pudim-800x600.jpg'
+        },
+        {
+          nome: 'Brigadeirao',
+          descricao: 'Brigadeirao gelado cremoso',
+          preco: 20.00,
+          imagem: IMG + '2018/11/Brigadeirão-800x600.jpg'
+        },
+        {
+          nome: 'Bolo Tapioca Gelado',
+          descricao: 'Bolo de tapioca gelado com coco',
+          preco: 20.00,
+          imagem: IMG + '2018/04/Tapioca-Gelado-800x600.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Cucas e Tortas',
+      emoji: '🥧',
+      itens: [
+        {
+          nome: 'Cuca de Maca e Nozes',
+          descricao: 'Cuca caseira com maca e nozes',
+          preco: 52.00,
+          imagem: IMG + '2017/10/Cuca-de-Maçã-e-Nozes-1-800x600.jpg'
+        },
+        {
+          nome: 'Cuca de Banana',
+          descricao: 'Cuca caseira de banana com canela',
+          preco: 50.00,
+          imagem: IMG + '2017/10/Cuca-de-Banana-800x600.jpg'
+        },
+        {
+          nome: 'Cuca de Chocolate',
+          descricao: 'Cuca caseira de chocolate',
+          preco: 52.00,
+          imagem: IMG + '2020/09/Cuca-de-Chocolate-800x600.jpg'
+        },
+        {
+          nome: 'Torta Banoffee',
+          descricao: 'Torta de banana com doce de leite e chantilly',
+          preco: 58.00,
+          imagem: IMG + '2023/05/Banoffee-1-1-800x600.jpg'
+        },
+        {
+          nome: 'Torta de Abacaxi',
+          descricao: 'Torta gelada de abacaxi',
+          preco: 55.00,
+          imagem: IMG + '2017/10/Torta-de-Abacaxi-800x600.jpg'
+        }
+      ]
+    }
+  ]
+};
+
+function renderCardapio(filtro) {
+  var main = document.getElementById('cardapio');
+  main.innerHTML = '';
+  var cats = filtro ? CONFIG.categorias.filter(function(c) { return c.nome === filtro; }) : CONFIG.categorias;
+  cats.forEach(function(cat) {
+    var titulo = document.createElement('h2');
+    titulo.className = 'secao-titulo';
+    titulo.textContent = cat.emoji + ' ' + cat.nome;
+    main.appendChild(titulo);
+    var container = document.createElement('div');
+    container.className = 'produtos';
+    cat.itens.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var imgHtml = item.imagem
+        ? '<img src="' + item.imagem + '" alt="' + item.nome + '" loading="lazy">'
+        : '<div class="sem-foto">' + cat.emoji + '</div>';
+      var precoHtml = item.promoPreco
+        ? '<span class="original">R$ ' + item.preco.toFixed(2).replace('.', ',') + '</span><span class="promo">R$ ' + item.promoPreco.toFixed(2).replace('.', ',') + '</span>'
+        : 'R$ ' + item.preco.toFixed(2).replace('.', ',');
+      card.innerHTML = imgHtml + '<div class="info"><div class="nome">' + item.nome + '</div><div class="descricao">' + item.descricao + '</div><div class="preco">' + precoHtml + '</div></div>';
+      container.appendChild(card);
+    });
+    main.appendChild(container);
+  });
+}
+
+function renderCategorias() {
+  var nav = document.getElementById('categorias');
+  var btnTodas = document.createElement('button');
+  btnTodas.textContent = 'Todas';
+  btnTodas.className = 'ativo';
+  btnTodas.onclick = function() {
+    document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+    btnTodas.classList.add('ativo');
+    renderCardapio(null);
+  };
+  nav.appendChild(btnTodas);
+  CONFIG.categorias.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.textContent = cat.emoji + ' ' + cat.nome;
+    btn.onclick = function() {
+      document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderCardapio(cat.nome);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('btnWhatsapp').href =
+  'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensagem);
+
+renderCategorias();
+renderCardapio(null);
+</script>
+</body>
+</html>
