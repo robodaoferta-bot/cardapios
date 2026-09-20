@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardápio - Pizzaria Brasa</title>
+<style>
+  :root {
+    --cor-primaria: #d32f2f;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+    --cor-preco: #ffca28;
+    --cor-promo: #4caf50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #b71c1c);
+    text-align: center;
+    padding: 32px 16px 24px;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+  .header .info { font-size: 0.85rem; opacity: 0.8; margin-top: 8px; }
+  .categorias {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo);
+    z-index: 10;
+  }
+  .categorias button {
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .categorias button.ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #fff;
+  }
+  .secao-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 24px 16px 8px;
+    color: var(--cor-preco);
+  }
+  .produtos { padding: 0 16px 24px; }
+  .card {
+    background: var(--cor-card);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    min-height: 110px;
+  }
+  .card img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .card .info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .card .nome {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .card .descricao {
+    font-size: 0.82rem;
+    color: var(--cor-subtexto);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .preco {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-preco);
+  }
+  .card .preco .original {
+    text-decoration: line-through;
+    color: var(--cor-subtexto);
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
+  .card .preco .promo { color: var(--cor-promo); }
+  .sem-foto {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+  }
+  .whatsapp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .footer {
+    text-align: center;
+    padding: 24px 16px 80px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Pizzaria Brasa</h1>
+  <p>Delivery e Retirada</p>
+  <div class="info">Aberto de ter a dom - 18h as 23h</div>
+</div>
+
+<nav class="categorias" id="categorias"></nav>
+
+<main id="cardapio"></main>
+
+<div class="footer">
+  Pizzaria Brasa - Delivery e Retirada<br>
+  Precos podem sofrer alteracao. Consulte pelo WhatsApp.
+</div>
+
+<a class="whatsapp-btn" id="btnWhatsapp" href="#">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.638-1.522A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.115 0-4.088-.656-5.712-1.781l-.41-.258-2.75.903.882-2.684-.278-.438A9.72 9.72 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+  Fazer pedido
+</a>
+
+<script>
+const CONFIG = {
+  nome: 'Pizzaria Brasa',
+  whatsapp: '5542992485140',
+  mensagem: 'Oi! Vi o cardapio e quero fazer um pedido 😋',
+  categorias: [
+    {
+      nome: 'Combos',
+      emoji: '🔥',
+      itens: [
+        {
+          nome: 'Pizza Broto + Refrigerante',
+          descricao: 'Pizza broto com ate 2 sabores, acompanha refrigerante de 1,5L',
+          preco: 79.90,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/2243377/faeb1fedWhatsApp_Image_2026-07-14_at_23.41.33.jpeg'
+        },
+        {
+          nome: 'Pizza Grande + Refrigerante 1,5L',
+          descricao: 'Pizza grande (8 pedacos) ate 2 sabores tradicionais, acompanha refrigerante de 1,5L',
+          preco: 99.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/3426204/f52f2ea4WhatsApp_Image_2026-07-14_at_09.25.53.jpeg'
+        },
+        {
+          nome: 'Pizza Grande + Pizza Doce',
+          descricao: 'Uma pizza salgada grande com 8 fatias e uma pizza broto doce com 4 fatias',
+          preco: 149.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/4654779/dca259fcWhatsApp_Image_2026-07-14_at_22.52.40.jpeg'
+        }
+      ]
+    },
+    {
+      nome: 'Pizzas Tradicionais',
+      emoji: '🍕',
+      itens: [
+        {
+          nome: 'Calabresa',
+          descricao: 'Calabresa fatiada, cebola roxa, oregano e azeitonas pretas',
+          preco: 54.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/2225835/enhanced-image-2225835-2026-06-26T07-27-51-983Z.jpg'
+        },
+        {
+          nome: 'Margherita',
+          descricao: 'Mussarela, finas fatias de tomate, manjericao fresco e oregano',
+          preco: 54.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/2225835/enhanced-image-2225835-2026-06-26T07-27-51-983Z.jpg'
+        },
+        {
+          nome: 'Portuguesa',
+          descricao: 'Presunto, ovo, cebola roxa, mussarela, azeitonas pretas e oregano',
+          preco: 56.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/2235784/enhanced-image-2235784-2026-06-26T07-28-45-610Z.jpg'
+        },
+        {
+          nome: 'Quatro Queijos',
+          descricao: 'Mussarela, parmesao, catupiry e gorgonzola',
+          preco: 58.00,
+          promoPreco: null,
+          imagem: 'https://storage.googleapis.com/prod-cardapio-web/uploads/item/image/2235784/enhanced-image-2235784-2026-06-26T07-28-45-610Z.jpg'
+        },
+        {
+          nome: 'Frango com Catupiry',
+          descricao: 'Frango desfiado, catupiry cremoso e milho',
+          preco: 56.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Pepperoni',
+          descricao: 'Pepperoni fatiado, mussarela e oregano',
+          preco: 58.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Pizzas Especiais',
+      emoji: '⭐',
+      itens: [
+        {
+          nome: 'Quarantanni',
+          descricao: 'Mussarela de bufala, presunto alemao defumado, queijo burrata, farofa de pistache e raspas de limao siciliano',
+          preco: 68.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Belissima',
+          descricao: 'Mussarela, toque de gorgonzola, geleia de figo caseira e presunto parma',
+          preco: 65.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Vegana Especial',
+          descricao: 'Massa integral, mussarela vegana, legumes grelhados e rucula',
+          preco: 62.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Pizzas Doces',
+      emoji: '🍫',
+      itens: [
+        {
+          nome: 'Chocolate com Morango',
+          descricao: 'Chocolate ao leite, morangos frescos e leite condensado',
+          preco: 55.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Banana com Canela',
+          descricao: 'Banana caramelizada, acucar com canela e leite condensado',
+          preco: 50.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Romeu e Julieta',
+          descricao: 'Goiabada cremosa e queijo minas derretido',
+          preco: 50.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Entradas',
+      emoji: '🧆',
+      itens: [
+        {
+          nome: 'Corniccione',
+          descricao: 'Deliciosas lascas de pizza temperadas',
+          preco: 28.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Bruschetta Pomodori',
+          descricao: 'Pao tostado com tomate picado, azeitonas pretas e parmesao (6 unidades)',
+          preco: 36.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Bruschetta Parma',
+          descricao: 'Pao tostado, queijo brie, rucula e presunto cru (6 unidades)',
+          preco: 48.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Burratina',
+          descricao: 'Queijo burrata, molho pesto, tomate cereja confitado e caponata de berinjela',
+          preco: 56.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Calzones',
+      emoji: '🥟',
+      itens: [
+        {
+          nome: 'Calzone 4 Queijos',
+          descricao: 'Mussarela, parmesao, catupiry e gorgonzola',
+          preco: 65.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Calzone Frango',
+          descricao: 'Frango desfiado, catupiry e milho',
+          preco: 65.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Calzone Carijo',
+          descricao: 'Presunto, ovo, catupiry e mussarela',
+          preco: 65.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Sobremesas',
+      emoji: '🍰',
+      itens: [
+        {
+          nome: 'Brigadeiro de Colher',
+          descricao: 'Brigadeiro cremoso artesanal',
+          preco: 22.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Brownie com Sorvete',
+          descricao: 'Bolo de chocolate com nozes, calda quente e sorvete de baunilha',
+          preco: 24.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Torta de Limao',
+          descricao: 'Fatia de torta de limao cremosa',
+          preco: 25.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Carpaccio de Morango',
+          descricao: 'Brigadeiro, fatias de morango, sorvete de baunilha e calda de chocolate',
+          preco: 40.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Bebidas',
+      emoji: '🥤',
+      itens: [
+        {
+          nome: 'Coca-Cola Lata',
+          descricao: '350ml',
+          preco: 9.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Coca-Cola Zero Lata',
+          descricao: '350ml',
+          preco: 9.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Guarana Lata',
+          descricao: '350ml',
+          preco: 9.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Coca-Cola 1,5L',
+          descricao: 'Garrafa 1,5 litro',
+          preco: 16.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Schweppes Citrus',
+          descricao: 'Lata 350ml',
+          preco: 10.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Agua Tonica',
+          descricao: 'Lata 350ml',
+          preco: 10.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Cervejas e Vinhos',
+      emoji: '🍷',
+      itens: [
+        {
+          nome: 'Stella Artois',
+          descricao: 'Long neck 330ml',
+          preco: 13.00,
+          promoPreco: null,
+          imagem: ''
+        },
+        {
+          nome: 'Vinho Tinto Malbec',
+          descricao: 'Vinho argentino, encorpado, com notas de frutas vermelhas e especiarias. 750ml',
+          preco: 89.00,
+          promoPreco: null,
+          imagem: ''
+        }
+      ]
+    }
+  ]
+};
+
+// Render
+function renderCardapio(filtro) {
+  const main = document.getElementById('cardapio');
+  main.innerHTML = '';
+  const cats = filtro ? CONFIG.categorias.filter(c => c.nome === filtro) : CONFIG.categorias;
+  cats.forEach(cat => {
+    const titulo = document.createElement('h2');
+    titulo.className = 'secao-titulo';
+    titulo.textContent = cat.emoji + ' ' + cat.nome;
+    main.appendChild(titulo);
+    const container = document.createElement('div');
+    container.className = 'produtos';
+    cat.itens.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const imgHtml = item.imagem
+        ? '<img src="' + item.imagem + '" alt="' + item.nome + '" loading="lazy">'
+        : '<div class="sem-foto">' + cat.emoji + '</div>';
+      let precoHtml;
+      if (item.promoPreco) {
+        precoHtml = '<span class="original">R$ ' + item.preco.toFixed(2).replace('.', ',') + '</span><span class="promo">R$ ' + item.promoPreco.toFixed(2).replace('.', ',') + '</span>';
+      } else {
+        precoHtml = 'R$ ' + item.preco.toFixed(2).replace('.', ',');
+      }
+      card.innerHTML = imgHtml + '<div class="info"><div class="nome">' + item.nome + '</div><div class="descricao">' + item.descricao + '</div><div class="preco">' + precoHtml + '</div></div>';
+      container.appendChild(card);
+    });
+    main.appendChild(container);
+  });
+}
+
+function renderCategorias() {
+  const nav = document.getElementById('categorias');
+  const btnTodas = document.createElement('button');
+  btnTodas.textContent = 'Todas';
+  btnTodas.className = 'ativo';
+  btnTodas.onclick = function() {
+    document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+    btnTodas.classList.add('ativo');
+    renderCardapio(null);
+  };
+  nav.appendChild(btnTodas);
+  CONFIG.categorias.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.textContent = cat.emoji + ' ' + cat.nome;
+    btn.onclick = function() {
+      document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderCardapio(cat.nome);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('btnWhatsapp').href =
+  'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensagem);
+
+renderCategorias();
+renderCardapio(null);
+</script>
+</body>
+</html>
