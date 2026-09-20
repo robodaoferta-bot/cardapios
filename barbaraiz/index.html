@@ -12,6 +12,7 @@
     --cor-texto: #f5f5f5;
     --cor-subtexto: #bbb;
     --cor-preco: #ffca28;
+    --cor-promo: #4caf50;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -72,6 +73,9 @@
     align-items: center;
     gap: 12px;
   }
+  .linha.promo {
+    border: 1px solid var(--cor-promo);
+  }
   .linha .info { min-width: 0; }
   .linha .nome { font-weight: 600; font-size: 0.98rem; }
   .linha .descricao {
@@ -85,6 +89,10 @@
     color: var(--cor-preco);
     margin-top: 3px;
   }
+  .linha .nota.promo-nota {
+    color: var(--cor-promo);
+    font-weight: 600;
+  }
   .linha .preco {
     font-size: 0.98rem;
     font-weight: 700;
@@ -93,6 +101,14 @@
     text-align: right;
     flex-shrink: 0;
   }
+  .linha .preco .original {
+    text-decoration: line-through;
+    color: var(--cor-subtexto);
+    font-weight: 400;
+    font-size: 0.82rem;
+    margin-right: 6px;
+  }
+  .linha .preco .promo-valor { color: var(--cor-promo); }
   .whatsapp-btn {
     position: fixed;
     bottom: 20px;
@@ -185,6 +201,14 @@ var CONFIG = {
           nome: 'Acabamento',
           descricao: 'Acabamento com maquina e navalha',
           faixa: 'R$ 55,00'
+        },
+        {
+          nome: 'Corte + Pomada de Presente',
+          descricao: 'Corte de cabelo e leve uma lata de pomada modeladora',
+          nota: '🔥 Promocao por tempo limitado',
+          promo: true,
+          original: 'R$ 170,00',
+          faixa: 'R$ 130,00'
         }
       ]
     }
@@ -204,10 +228,13 @@ function renderCardapio(filtro) {
     container.className = 'produtos';
     cat.itens.forEach(function(item) {
       var linha = document.createElement('div');
-      linha.className = 'linha';
+      linha.className = item.promo ? 'linha promo' : 'linha';
       var descHtml = item.descricao ? '<div class="descricao">' + item.descricao + '</div>' : '';
-      var notaHtml = item.nota ? '<div class="nota">' + item.nota + '</div>' : '';
-      linha.innerHTML = '<div class="info"><div class="nome">' + item.nome + '</div>' + descHtml + notaHtml + '</div><div class="preco">' + item.faixa + '</div>';
+      var notaHtml = item.nota ? '<div class="nota' + (item.promo ? ' promo-nota' : '') + '">' + item.nota + '</div>' : '';
+      var precoHtml = item.promo
+        ? '<span class="original">' + item.original + '</span><span class="promo-valor">' + item.faixa + '</span>'
+        : item.faixa;
+      linha.innerHTML = '<div class="info"><div class="nome">' + item.nome + '</div>' + descHtml + notaHtml + '</div><div class="preco">' + precoHtml + '</div>';
       container.appendChild(linha);
     });
     main.appendChild(container);
