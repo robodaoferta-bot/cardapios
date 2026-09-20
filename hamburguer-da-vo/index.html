@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardapio - Hamburguer da Vo</title>
+<style>
+  :root {
+    --cor-primaria: #e65100;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+    --cor-preco: #ffca28;
+    --cor-promo: #4caf50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #bf360c);
+    text-align: center;
+    padding: 32px 16px 24px;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+  .header .info { font-size: 0.85rem; opacity: 0.8; margin-top: 8px; }
+  .categorias {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo);
+    z-index: 10;
+  }
+  .categorias button {
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .categorias button.ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #fff;
+  }
+  .secao-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 24px 16px 8px;
+    color: var(--cor-preco);
+  }
+  .produtos { padding: 0 16px 24px; }
+  .card {
+    background: var(--cor-card);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    min-height: 110px;
+  }
+  .card img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .card .info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .card .nome {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .card .descricao {
+    font-size: 0.82rem;
+    color: var(--cor-subtexto);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .preco {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-preco);
+  }
+  .card .preco .original {
+    text-decoration: line-through;
+    color: var(--cor-subtexto);
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
+  .card .preco .promo { color: var(--cor-promo); }
+  .sem-foto {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+  }
+  .whatsapp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .footer {
+    text-align: center;
+    padding: 24px 16px 80px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Hamburguer da Vo</h1>
+  <p>Delivery e Retirada</p>
+  <div class="info">Aberto de ter a dom - 18h as 23h | Pedido min. R$ 15,00</div>
+</div>
+
+<nav class="categorias" id="categorias"></nav>
+
+<main id="cardapio"></main>
+
+<div class="footer">
+  Hamburguer da Vo - Delivery e Retirada<br>
+  Precos podem sofrer alteracao. Consulte pelo WhatsApp.
+</div>
+
+<a class="whatsapp-btn" id="btnWhatsapp" href="#">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.638-1.522A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.115 0-4.088-.656-5.712-1.781l-.41-.258-2.75.903.882-2.684-.278-.438A9.72 9.72 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+  Fazer pedido
+</a>
+
+<script>
+var IMG = 'https://cdn.vucasolution.com.br/upload/w_300/https://gryyplgyeyqb.compat.objectstorage.sa-saopaulo-1.oraclecloud.com/vuca-cdn/starbulls/arqs/produtos/';
+
+var CONFIG = {
+  nome: 'Hamburguer da Vo',
+  whatsapp: '5542992485140',
+  mensagem: 'Oi! Vi o cardapio e quero fazer um pedido 🍔',
+  categorias: [
+    {
+      nome: 'Lanches',
+      emoji: '🍗',
+      itens: [
+        {
+          nome: 'Old Chicken Lanche',
+          descricao: 'Pao brioche prime, peito de frango empanado, queijo, cebola roxa, alface e molho star',
+          preco: 39.90,
+          imagem: IMG + 'b08c013839ca6b948967ec6fc27d8b209086fe8b.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Hamburgueres',
+      emoji: '🍔',
+      itens: [
+        {
+          nome: 'Old Burguer',
+          descricao: 'Pao brioche prime, hamburguer de 150g, queijo e maionese star',
+          preco: 24.90,
+          imagem: IMG + 'eigx4ib8hr0vrit6ycny.jpg'
+        },
+        {
+          nome: 'Old Original',
+          descricao: 'Pao brioche, hamburguer de 150g, cheddar, picles artesanal, cebola roxa, ketchup e mostarda',
+          preco: 27.00,
+          imagem: IMG + 'fcmc6iflzg5ebdsrj8hd.jpg'
+        },
+        {
+          nome: 'Old Americano',
+          descricao: 'Pao brioche, hamburguer de 150g, bacon, queijo, alface americano e maionese star',
+          preco: 29.00,
+          imagem: IMG + 'jgrhawnfxea7m3fdi7kl.jpg'
+        },
+        {
+          nome: 'Old Egg Bacon',
+          descricao: 'Pao brioche, hamburguer 150g, ovo, bacon, salada, cheddar e maionese star',
+          preco: 30.00,
+          imagem: IMG + 'esj61vozi5wn6xj732tn.jpg'
+        },
+        {
+          nome: 'Old Star',
+          descricao: 'Pao brioche prime, hamburguer de 150g, cheddar fatia, cebola roxa, bacon e molho star',
+          preco: 33.00,
+          imagem: IMG + 'ik2s7cwr2mzpyo9nezbl.heic'
+        },
+        {
+          nome: 'Old Supremo',
+          descricao: 'Pao brioche prime, hamburguer 150g, piscina de cheddar e bacon cubo',
+          preco: 33.00,
+          imagem: IMG + 'vnlnj7f1j3md6rppwmid.jpg'
+        },
+        {
+          nome: 'Old Australiano',
+          descricao: 'Pao australiano, hamburguer de 150g, cheddar fatiado, cebola caramelizada e maionese star',
+          preco: 33.00,
+          imagem: IMG + 'tloenzzyjtyqhxdtiecu.jpg'
+        },
+        {
+          nome: 'Old Spicy',
+          descricao: 'Pao brioche prime, hamburguer de 150g, cheddar, carne desfiada com barbecue, sour cream, pimenta jalapeno',
+          preco: 38.90,
+          imagem: IMG + 'v9cdjfm6jiiqmhpn8pzh.jpg'
+        },
+        {
+          nome: 'Old Duplo',
+          descricao: 'Pao brioche selado, 2 hamburgueres de 150g (total 320g), queijo cheddar, alface americano, molho star',
+          preco: 33.00,
+          imagem: ''
+        },
+        {
+          nome: 'Old Monstrao',
+          descricao: 'Pao brioche selado, 3 hamburgueres de 150g (total 480g), queijo cheddar, alface americano e molho star',
+          preco: 44.00,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Smash Burgers',
+      emoji: '🔥',
+      itens: [
+        {
+          nome: 'Duplo Smash Bacon',
+          descricao: 'Pao brioche, duas carnes de 60g, dois queijos cheddar, molho star, alface americano e bacon fatiado',
+          preco: 20.99,
+          imagem: IMG + 'zransvhplry7atmxqoqo.jpg'
+        },
+        {
+          nome: 'Duplo Smash Original',
+          descricao: 'Pao brioche, duas carnes de 60g prensada na chapa, duplo cheddar, picles, cebola, ketchup de goiaba e mostarda',
+          preco: 20.99,
+          imagem: IMG + 'vwe6xkpiekafqajyljj8.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Combos',
+      emoji: '🎉',
+      itens: [
+        {
+          nome: 'Combo Mini Burguer com Suco',
+          descricao: '2 mini paes com mini carne de 50g cada, molho da casa, queijo cheddar, batata frita e suco',
+          preco: 35.90,
+          imagem: IMG + 'uiycgwbfpqzl8vdwzbka.jpg'
+        },
+        {
+          nome: 'Combo Duplo Smash Bacon',
+          descricao: 'Duplo Smash Bacon + batata simples pequena + refrigerante lata',
+          preco: 29.90,
+          imagem: IMG + 'sagy1zgz17kjgwcpusiv.jpg'
+        },
+        {
+          nome: 'Combo Duplo Smash Original',
+          descricao: 'Duplo Smash Original + batata simples pequena + refrigerante lata',
+          preco: 29.90,
+          imagem: IMG + 'uhm5xuzbxnntvrfwrqfg.webp'
+        },
+        {
+          nome: 'Combo Old Burguer',
+          descricao: 'Old Burguer + batata simples pequena + refrigerante lata',
+          preco: 30.00,
+          imagem: IMG + 'cxih7well5iua3nkjuny.webp'
+        },
+        {
+          nome: 'Combo Old Americano',
+          descricao: 'Old Americano + batata simples pequena + refrigerante lata',
+          preco: 38.00,
+          imagem: IMG + 's7yecbyc5dkponxyhuix.jpg'
+        },
+        {
+          nome: 'Combo Casal',
+          descricao: '2 Old Americano + porcao de batata com cheddar e bacon + refrigerante 600ml',
+          preco: 99.00,
+          imagem: IMG + 'igixciw6xqvd7kkvvcve.webp'
+        },
+        {
+          nome: 'Combo Amor Perfeito',
+          descricao: '2 Old Supremo + 1 coca ou guarana 600ml + 1 batata spicy com carne desfiada, sour cream, cheddar e jalapeno',
+          preco: 120.00,
+          imagem: IMG + 'ecmmowxjuonxhgi4mlmw.webp'
+        }
+      ]
+    },
+    {
+      nome: 'Porcoes',
+      emoji: '🍟',
+      itens: [
+        {
+          nome: 'Batata Simples',
+          descricao: 'Porcao de 350g de batata palito simples',
+          preco: 23.00,
+          imagem: IMG + 'aj8tmiwuqccyrwta58qc.jpg'
+        },
+        {
+          nome: 'Batata Spicy',
+          descricao: '350g de batata palito, creme de cheddar, carne desfiada, sour cream e pimenta jalapeno',
+          preco: 37.90,
+          imagem: IMG + 'egsyhgvzgh9soldqk6td.jpg'
+        },
+        {
+          nome: 'Batata Cheddar e Bacon',
+          descricao: '300g de batata palito, creme de cheddar, bacon em cubos',
+          preco: 33.00,
+          imagem: IMG + 'cnavdanzwxgrjzgfsa1m.jpg'
+        },
+        {
+          nome: 'Croqueta de Cupim',
+          descricao: 'Croquetas de cupim desfiada temperadas ao molho barbecue, empanadas sem massa. 4 unidades',
+          preco: 33.00,
+          imagem: IMG + 'rz9bxynstpwwrz18stkg.jpg'
+        },
+        {
+          nome: 'Coxa Creme',
+          descricao: 'Coxas desfiadas com queijo mussarela empanadas na panko, acompanha molho tartaro',
+          preco: 27.00,
+          imagem: IMG + 'moed5bsum5ihvoymdzue.jpg'
+        },
+        {
+          nome: 'Buffalo Wings',
+          descricao: 'Coxinhas da asa assadas e fritas banhadas no molho buffalo, levemente picante (10 unidades)',
+          preco: 29.00,
+          imagem: IMG + 'oizuvh2ax71mnfdkexcg.jpg'
+        }
+      ]
+    },
+    {
+      nome: 'Cervejas',
+      emoji: '🍺',
+      itens: [
+        {
+          nome: 'Heineken Long Neck',
+          descricao: '330ml',
+          preco: 10.00,
+          imagem: ''
+        },
+        {
+          nome: 'Heineken Zero Long Neck',
+          descricao: '330ml - sem alcool',
+          preco: 10.00,
+          imagem: ''
+        }
+      ]
+    },
+    {
+      nome: 'Bebidas',
+      emoji: '🥤',
+      itens: [
+        {
+          nome: 'Coca-Cola 310ml',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Coca Zero 310ml',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Guarana 269ml',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Fanta Laranja 310ml',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Fanta Uva 310ml',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Sprite Lata',
+          descricao: 'Lata',
+          preco: 6.60,
+          imagem: ''
+        },
+        {
+          nome: 'Coca Zero 600ml',
+          descricao: 'Garrafa',
+          preco: 9.90,
+          imagem: ''
+        },
+        {
+          nome: 'H2O Limao',
+          descricao: '500ml',
+          preco: 8.00,
+          imagem: ''
+        },
+        {
+          nome: 'Agua com Gas 350ml',
+          descricao: '',
+          preco: 3.50,
+          imagem: ''
+        },
+        {
+          nome: 'Agua sem Gas 350ml',
+          descricao: '',
+          preco: 3.00,
+          imagem: ''
+        }
+      ]
+    }
+  ]
+};
+
+function renderCardapio(filtro) {
+  var main = document.getElementById('cardapio');
+  main.innerHTML = '';
+  var cats = filtro ? CONFIG.categorias.filter(function(c) { return c.nome === filtro; }) : CONFIG.categorias;
+  cats.forEach(function(cat) {
+    var titulo = document.createElement('h2');
+    titulo.className = 'secao-titulo';
+    titulo.textContent = cat.emoji + ' ' + cat.nome;
+    main.appendChild(titulo);
+    var container = document.createElement('div');
+    container.className = 'produtos';
+    cat.itens.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var imgHtml = item.imagem
+        ? '<img src="' + item.imagem + '" alt="' + item.nome + '" loading="lazy">'
+        : '<div class="sem-foto">' + cat.emoji + '</div>';
+      var precoHtml = item.promoPreco
+        ? '<span class="original">R$ ' + item.preco.toFixed(2).replace('.', ',') + '</span><span class="promo">R$ ' + item.promoPreco.toFixed(2).replace('.', ',') + '</span>'
+        : 'R$ ' + item.preco.toFixed(2).replace('.', ',');
+      card.innerHTML = imgHtml + '<div class="info"><div class="nome">' + item.nome + '</div><div class="descricao">' + item.descricao + '</div><div class="preco">' + precoHtml + '</div></div>';
+      container.appendChild(card);
+    });
+    main.appendChild(container);
+  });
+}
+
+function renderCategorias() {
+  var nav = document.getElementById('categorias');
+  var btnTodas = document.createElement('button');
+  btnTodas.textContent = 'Todas';
+  btnTodas.className = 'ativo';
+  btnTodas.onclick = function() {
+    document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+    btnTodas.classList.add('ativo');
+    renderCardapio(null);
+  };
+  nav.appendChild(btnTodas);
+  CONFIG.categorias.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.textContent = cat.emoji + ' ' + cat.nome;
+    btn.onclick = function() {
+      document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderCardapio(cat.nome);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('btnWhatsapp').href =
+  'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensagem);
+
+renderCategorias();
+renderCardapio(null);
+</script>
+</body>
+</html>
