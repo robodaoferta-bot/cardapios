@@ -76,6 +76,13 @@
   .linha.promo {
     border: 1px solid var(--cor-promo);
   }
+  .linha img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
   .linha .info { min-width: 0; }
   .linha .nome { font-weight: 600; font-size: 0.98rem; }
   .linha .descricao {
@@ -208,7 +215,8 @@ var CONFIG = {
           nota: '🔥 Economize R$ 50,00 (20% de desconto) se voce ja ia levar a pomada',
           promo: true,
           original: 'R$ 250,00',
-          faixa: 'R$ 200,00'
+          faixa: 'R$ 200,00',
+          imagem: 'https://www.osantobarbearia.com.br/images/product-02.jpeg'
         }
       ]
     }
@@ -234,7 +242,8 @@ function renderCardapio(filtro) {
       var precoHtml = item.promo
         ? '<span class="original">' + item.original + '</span><span class="promo-valor">' + item.faixa + '</span>'
         : item.faixa;
-      linha.innerHTML = '<div class="info"><div class="nome">' + item.nome + '</div>' + descHtml + notaHtml + '</div><div class="preco">' + precoHtml + '</div>';
+      var imgHtml = item.imagem ? '<img src="' + item.imagem + '" alt="' + item.nome + '" loading="lazy">' : '';
+      linha.innerHTML = imgHtml + '<div class="info"><div class="nome">' + item.nome + '</div>' + descHtml + notaHtml + '</div><div class="preco">' + precoHtml + '</div>';
       container.appendChild(linha);
     });
     main.appendChild(container);
