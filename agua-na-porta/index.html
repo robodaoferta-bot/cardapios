@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardapio - Agua na Porta</title>
+<style>
+  :root {
+    --cor-primaria: #0288d1;
+    --cor-fundo: #1a1a1a;
+    --cor-card: #2a2a2a;
+    --cor-texto: #f5f5f5;
+    --cor-subtexto: #bbb;
+    --cor-preco: #4fc3f7;
+    --cor-promo: #4caf50;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--cor-primaria), #01579b);
+    text-align: center;
+    padding: 32px 16px 24px;
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; }
+  .header p { font-size: 0.95rem; opacity: 0.9; margin-top: 4px; }
+  .header .info { font-size: 0.85rem; opacity: 0.8; margin-top: 8px; }
+  .categorias {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    position: sticky;
+    top: 0;
+    background: var(--cor-fundo);
+    z-index: 10;
+  }
+  .categorias button {
+    background: var(--cor-card);
+    color: var(--cor-texto);
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .categorias button.ativo {
+    background: var(--cor-primaria);
+    border-color: var(--cor-primaria);
+    color: #fff;
+  }
+  .secao-titulo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    padding: 24px 16px 8px;
+    color: var(--cor-preco);
+  }
+  .produtos { padding: 0 16px 24px; }
+  .card {
+    background: var(--cor-card);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    display: flex;
+    min-height: 110px;
+  }
+  .card img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .card .info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .card .nome {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+  .card .descricao {
+    font-size: 0.82rem;
+    color: var(--cor-subtexto);
+    line-height: 1.3;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card .preco {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--cor-preco);
+  }
+  .card .preco .original {
+    text-decoration: line-through;
+    color: var(--cor-subtexto);
+    font-weight: 400;
+    font-size: 0.85rem;
+    margin-right: 6px;
+  }
+  .card .preco .promo { color: var(--cor-promo); }
+  .sem-foto {
+    width: 110px;
+    height: 110px;
+    flex-shrink: 0;
+    background: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25d366;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
+  }
+  .whatsapp-btn svg { width: 22px; height: 22px; fill: #fff; }
+  .aviso {
+    margin: 16px 16px 0;
+    background: var(--cor-card);
+    border-left: 4px solid var(--cor-primaria);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+  .aviso strong { display: block; color: var(--cor-preco); margin-bottom: 6px; }
+  .aviso ul { padding-left: 18px; color: var(--cor-subtexto); }
+  .aviso b { color: var(--cor-texto); }
+  .footer {
+    text-align: center;
+    padding: 24px 16px 80px;
+    color: var(--cor-subtexto);
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Agua na Porta</h1>
+  <p>Galoes de agua mineral de 20L e 10L entregues em casa</p>
+  <div class="info">Aberto de seg a sab - 8h as 18h | Entrega a partir de 2 galoes</div>
+</div>
+
+<div class="aviso">
+  <strong>Como funciona o galao</strong>
+  <ul>
+    <li>Os precos de agua valem para quem <b>ja tem o galao vazio</b> para trocar.</li>
+    <li>Nao tem galao? Compre o galao retornavel (R$ 35,00) junto com a agua. So compra uma vez.</li>
+    <li>O galao vale para <b>qualquer marca</b>: da o galao da Cristal e leva Rocha Branca, sem custo extra.</li>
+    <li>Entrega por motoboy a partir de <b>2 galoes</b> por pedido (pode misturar marcas e tamanhos). A taxa segue a tabela de distancia.</li>
+    <li>Pedido de 1 galao so para retirada no local.</li>
+  </ul>
+</div>
+
+<nav class="categorias" id="categorias"></nav>
+
+<main id="cardapio"></main>
+
+<div class="footer">
+  Agua na Porta - Entrega por motoboy a partir de 2 galoes (taxa por distancia)<br>
+  Precos podem sofrer alteracao. Consulte pelo WhatsApp.
+</div>
+
+<a class="whatsapp-btn" id="btnWhatsapp" href="#">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.638-1.522A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75c-2.115 0-4.088-.656-5.712-1.781l-.41-.258-2.75.903.882-2.684-.278-.438A9.72 9.72 0 012.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75z"/></svg>
+  Fazer pedido
+</a>
+
+<script>
+var CONFIG = {
+  nome: 'Agua na Porta',
+  whatsapp: '5542992485140',
+  mensagem: 'Oi! Vi o cardapio e quero pedir agua 💧',
+  categorias: [
+    {
+      nome: 'Recarga 20 litros',
+      emoji: '💧',
+      itens: [
+        { nome: 'Rocha Branca 20L', descricao: 'Agua mineral Rocha Branca, troca do galao de 20 litros', preco: 22.00 },
+        { nome: 'Cristal 20L', descricao: 'Agua mineral Cristal, troca do galao de 20 litros', preco: 20.00 },
+        { nome: 'Sao Lourenco 20L', descricao: 'Agua mineral Sao Lourenco, troca do galao de 20 litros', preco: 20.00 }
+      ]
+    },
+    {
+      nome: 'Recarga 10 litros',
+      emoji: '🚰',
+      itens: [
+        { nome: 'Rocha Branca 10L', descricao: 'Agua mineral Rocha Branca, troca do galao de 10 litros', preco: 12.00 },
+        { nome: 'Cristal 10L', descricao: 'Agua mineral Cristal, troca do galao de 10 litros', preco: 10.00 },
+        { nome: 'Sao Lourenco 10L', descricao: 'Agua mineral Sao Lourenco, troca do galao de 10 litros', preco: 10.00 }
+      ]
+    },
+    {
+      nome: 'Galao (primeira compra)',
+      emoji: '🫙',
+      itens: [
+        { nome: 'Galao retornavel 20L', descricao: 'So para quem ainda nao tem galao. Compra uma vez, depois e so trocar', preco: 35.00 },
+        { nome: 'Galao retornavel 10L', descricao: 'So para quem ainda nao tem galao. Compra uma vez, depois e so trocar', preco: 35.00 }
+      ]
+    }
+  ]
+};
+function renderCardapio(filtro) {
+  var main = document.getElementById('cardapio');
+  main.innerHTML = '';
+  var cats = filtro ? CONFIG.categorias.filter(function(c) { return c.nome === filtro; }) : CONFIG.categorias;
+  cats.forEach(function(cat) {
+    var titulo = document.createElement('h2');
+    titulo.className = 'secao-titulo';
+    titulo.textContent = cat.emoji + ' ' + cat.nome;
+    main.appendChild(titulo);
+    var container = document.createElement('div');
+    container.className = 'produtos';
+    cat.itens.forEach(function(item) {
+      var card = document.createElement('div');
+      card.className = 'card';
+      var imgHtml = item.imagem
+        ? '<img src="' + item.imagem + '" alt="' + item.nome + '" loading="lazy">'
+        : '<div class="sem-foto">' + cat.emoji + '</div>';
+      var precoHtml = item.promoPreco
+        ? '<span class="original">R$ ' + item.preco.toFixed(2).replace('.', ',') + '</span><span class="promo">R$ ' + item.promoPreco.toFixed(2).replace('.', ',') + '</span>'
+        : 'R$ ' + item.preco.toFixed(2).replace('.', ',');
+      card.innerHTML = imgHtml + '<div class="info"><div class="nome">' + item.nome + '</div><div class="descricao">' + item.descricao + '</div><div class="preco">' + precoHtml + '</div></div>';
+      container.appendChild(card);
+    });
+    main.appendChild(container);
+  });
+}
+
+function renderCategorias() {
+  var nav = document.getElementById('categorias');
+  var btnTodas = document.createElement('button');
+  btnTodas.textContent = 'Todas';
+  btnTodas.className = 'ativo';
+  btnTodas.onclick = function() {
+    document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+    btnTodas.classList.add('ativo');
+    renderCardapio(null);
+  };
+  nav.appendChild(btnTodas);
+  CONFIG.categorias.forEach(function(cat) {
+    var btn = document.createElement('button');
+    btn.textContent = cat.emoji + ' ' + cat.nome;
+    btn.onclick = function() {
+      document.querySelectorAll('.categorias button').forEach(function(b) { b.classList.remove('ativo'); });
+      btn.classList.add('ativo');
+      renderCardapio(cat.nome);
+    };
+    nav.appendChild(btn);
+  });
+}
+
+document.getElementById('btnWhatsapp').href =
+  'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(CONFIG.mensagem);
+
+renderCategorias();
+renderCardapio(null);
+</script>
+</body>
+</html>
